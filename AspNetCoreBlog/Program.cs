@@ -1,3 +1,5 @@
+using AspNetCoreBlog.Data;
+
 namespace AspNetCoreBlog
 {
     public class Program
@@ -8,6 +10,9 @@ namespace AspNetCoreBlog
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // DatabaseContext i servis olarak ekliyoruz
+            builder.Services.AddDbContext<DatabaseContext>();
 
             var app = builder.Build();
 
