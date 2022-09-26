@@ -1,6 +1,8 @@
 ﻿using AspNetCoreBlog.Data;
+using AspNetCoreBlog.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCoreBlog.Areas.Admin.Controllers
 {
@@ -33,52 +35,80 @@ namespace AspNetCoreBlog.Areas.Admin.Controllers
         // POST: CategoriesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Category category)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    context.Categories.Add(category);
+                    context.SaveChanges();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Hata Oluştu");
+                }
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(category);
         }
 
         // GET: CategoriesController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var kategori = context.Categories.FirstOrDefault(c => c.Id == id);
+
+            return View(kategori);
         }
 
         // POST: CategoriesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Category category)
         {
             try
             {
+                context.Update(category);
+                context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                ModelState.AddModelError("", "Hata Oluştu");
             }
+            return View(category);
         }
 
         // GET: CategoriesController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var kategori = context.Categories.Find(id);
+
+            // Direk get metodunda silmek istersek
+
+            //context.Categories.Remove(kategori);
+            //context.SaveChanges();
+            //return RedirectToAction(nameof(Index));
+
+            return View(kategori);
         }
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Category category)
         {
             try
             {
+                // 1. Silme yöntemi
+                //context.Categories.Remove(category);
+
+                // 2. Silme yöntemi
+                context.Entry(category).State = EntityState.Deleted;
+
+                context.SaveChanges();
+
                 return RedirectToAction(nameof(Index));
             }
             catch
