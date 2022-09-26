@@ -31,6 +31,12 @@ namespace AspNetCoreBlog
 
             app.UseAuthorization();
 
+            // Admin area için route
+            app.MapControllerRoute(
+            name: "admin",
+            pattern: "{area:exists}/{controller=Default}/{action=Index}/{id?}");
+
+            // Normal site için route
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
