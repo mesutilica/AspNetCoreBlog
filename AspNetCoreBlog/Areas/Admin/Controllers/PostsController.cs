@@ -1,10 +1,12 @@
 ﻿using AspNetCoreBlog.Data;
-using Microsoft.AspNetCore.Http;
+using AspNetCoreBlog.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCoreBlog.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class PostsController : Controller // S.O.L.I.D Prensipleri
     {
         private readonly DatabaseContext _context; // Burada DatabaseContext i kendimiz new lemek yerine 
@@ -15,9 +17,11 @@ namespace AspNetCoreBlog.Areas.Admin.Controllers
         }
 
         // GET: PostsController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
+            var model = await _context.Posts.ToListAsync();
+
+            return View(model);
         }
 
         // GET: PostsController/Details/5
@@ -27,7 +31,7 @@ namespace AspNetCoreBlog.Areas.Admin.Controllers
         }
 
         // GET: PostsController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
@@ -35,52 +39,86 @@ namespace AspNetCoreBlog.Areas.Admin.Controllers
         // POST: PostsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> CreateAsync(Post post, IFormFile? Image)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    if (Image is not null)
+                    {
+                        string directory = Directory.GetCurrentDirectory() + "/wwwroot/Img/" + Image.FileName;
+                        using var stream = new FileStream(directory, FileMode.Create); // Buradaki using ifadesi stream isimli değişkenin işinin bittikten sonra bellekten atılmasını sağlar
+                        await Image.CopyToAsync(stream); // resmi asenkron olarak yükledik
+                        post.Image = Image.FileName;
+                    }
+                    await _context.Posts.AddAsync(post);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Hata Oluştu");
+                }
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(post);
         }
 
         // GET: PostsController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> EditAsync(int id)
         {
-            return View();
+            var kayit = await _context.Posts.FindAsync(id);
+
+            return View(kayit);
         }
 
         // POST: PostsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> EditAsync(int id, Post post, IFormFile? Image)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    if (Image is not null)
+                    {
+                        string directory = Directory.GetCurrentDirectory() + "/wwwroot/Img/" + Image.FileName;
+                        using var stream = new FileStream(directory, FileMode.Create);
+                        await Image.CopyToAsync(stream);
+                        post.Image = Image.FileName;
+                    }
+                    _context.Posts.Update(post);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Hata Oluştu");
+                }
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(post);
         }
 
         // GET: PostsController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> DeleteAsync(int id)
         {
-            return View();
+            var kayit = await _context.Posts.FindAsync(id);
+
+            return View(kayit);
         }
 
         // POST: PostsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeleteAsync(int id, Post post)
         {
             try
             {
+                _context.Posts.Remove(post);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch

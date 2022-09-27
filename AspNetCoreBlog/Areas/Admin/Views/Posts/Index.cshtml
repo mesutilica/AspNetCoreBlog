@@ -41,7 +41,7 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Image)
+                    <img src="/Img/@Html.DisplayFor(modelItem => item.Image)" alt="" height="50" title="@item.Image" />
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.IsActive)

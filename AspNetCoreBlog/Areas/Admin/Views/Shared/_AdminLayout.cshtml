@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AspNetCoreBlog</title>
+    <title>@ViewData["Title"] - AspNet Core Blog</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AspNetCoreBlog.styles.css" asp-append-version="true" />
@@ -32,8 +32,13 @@
                             <a class="nav-link text-dark" asp-area="Admin" asp-controller="Posts" asp-action="Index">İçerik Yönetimi</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Kullanıcı Yönetimi</a>
+                        </li>
+
                     </ul>
                 </div>
+                <a class="btn btn-danger" asp-area="Admin" asp-controller="Login" asp-action="SignOut">Oturumu Kapat</a>
             </div>
         </nav>
     </header>

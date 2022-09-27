@@ -1,12 +1,12 @@
 ﻿using AspNetCoreBlog.Data;
 using AspNetCoreBlog.Entities;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCoreBlog.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class CategoriesController : Controller
     {
         //private readonly DatabaseContext _databaseContext;

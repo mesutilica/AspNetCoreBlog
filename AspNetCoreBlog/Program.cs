@@ -1,4 +1,5 @@
 using AspNetCoreBlog.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace AspNetCoreBlog
 {
@@ -13,6 +14,11 @@ namespace AspNetCoreBlog
 
             // DatabaseContext i servis olarak ekliyoruz
             builder.Services.AddDbContext<DatabaseContext>();
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(u =>
+            {
+                u.LoginPath = "/Admin/Login"; // kullanýcý giriþ yapmamýþsa bu adrese yönlendir
+            });
 
             var app = builder.Build();
 
@@ -29,6 +35,7 @@ namespace AspNetCoreBlog
 
             app.UseRouting();
 
+            app.UseAuthentication(); // Admin giriþ için oturum açmayý aktif et
             app.UseAuthorization();
 
             // Admin area için route
