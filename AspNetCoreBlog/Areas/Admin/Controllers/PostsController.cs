@@ -2,6 +2,7 @@
 using AspNetCoreBlog.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCoreBlog.Areas.Admin.Controllers
@@ -31,8 +32,12 @@ namespace AspNetCoreBlog.Areas.Admin.Controllers
         }
 
         // GET: PostsController/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
+            var kategoriler = await _context.Categories.ToListAsync();
+
+            ViewBag.CategoryId = new SelectList(kategoriler, "Id", "Name");
+
             return View();
         }
 
@@ -61,6 +66,9 @@ namespace AspNetCoreBlog.Areas.Admin.Controllers
                     ModelState.AddModelError("", "Hata Oluştu");
                 }
             }
+            var kategoriler = await _context.Categories.ToListAsync();
+
+            ViewBag.CategoryId = new SelectList(kategoriler, "Id", "Name");
 
             return View(post);
         }
@@ -69,6 +77,10 @@ namespace AspNetCoreBlog.Areas.Admin.Controllers
         public async Task<ActionResult> EditAsync(int id)
         {
             var kayit = await _context.Posts.FindAsync(id);
+
+            var kategoriler = await _context.Categories.ToListAsync();
+
+            ViewBag.CategoryId = new SelectList(kategoriler, "Id", "Name");
 
             return View(kayit);
         }
@@ -98,6 +110,9 @@ namespace AspNetCoreBlog.Areas.Admin.Controllers
                     ModelState.AddModelError("", "Hata Oluştu");
                 }
             }
+            var kategoriler = await _context.Categories.ToListAsync();
+
+            ViewBag.CategoryId = new SelectList(kategoriler, "Id", "Name");
 
             return View(post);
         }
